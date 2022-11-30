@@ -9,7 +9,7 @@ The package has three codes:
 
 2. **DS_VI_fromRLvisib_MPI.py**
 
-   The dynamic spectrum (DS) making code. It uses parallel processing tools in python to operate on the splitted out sub-MS data pickle files- each file per core for each polarisation. It writes out visibility averaged dynamic spectra (pickled numpy ndarrays) in STOKES RR, LL, V, I and circular polarisation (V/I) for each sub data set. The cade is also equipped with simple flagging options based on clipping fluxes beyond some level in different polarisations (V & I). The code also masks bad regions of data based on expected stellar polarisation levels and sense of polarisation. The code can be used to average data in frequency and time as per need, which will help to also obtain band averaged light curve for the source.
+   The dynamic spectrum (DS) making code. It uses parallel processing tools in python to operate on the splitted out sub-MS data pickle files- each file per core for each polarisation. It writes out visibility averaged dynamic spectra (pickled numpy ndarrays) in **STOKES RR, LL, V, I and circular polarisation (V/I)** for each sub data set. The cade is also equipped with simple flagging options based on clipping fluxes beyond some level in different polarisations (V & I). The code also masks bad regions of data based on expected stellar polarisation levels and sense of polarisation. The code can be used to average data in frequency and time as per need, which will help to also obtain band averaged light curve for the source.
 
 3. **plot_fullDS_formscanVisibDS.py** 
 
