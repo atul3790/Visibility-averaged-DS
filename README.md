@@ -3,7 +3,7 @@ This is a package which takes in calibrated measurement set and a background sky
 The package uses python 3.6 and calls CASA tools/tasks via python. This bridge works or is tested only between python 3.6 and CASA 6.4 (See, https://casadocs.readthedocs.io/en/v6.2.1/notebooks/usingcasa.html#Modular-Installation-of-CASA-6)
 The package has three codes: 
 
-1. MS_prep_forVisavgDS.py:
+1. \bf{MS_prep_forVisavgDS.py}:
    A prep code which prepares the CASA measurement set (MS) data to be passed to the dynamic spectrum making code. It splits the MS data into multiple target source scans as a function of polarisations. Data in each scan per polarisation will be divided into sub scan time periods as per user's needs to produce low volume sub data sets, easier to analyse parallely. The code can be used to also average the MS in time and frequency prior to splitiing. The splitted out MS data will be saved as numpy arrays in pickle file format.
 
 2. DS_VI_fromRLvisib_MPI.py: 
