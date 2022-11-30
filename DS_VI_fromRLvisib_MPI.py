@@ -1,12 +1,22 @@
 '''
-Stokes V, I, RR and LL DS from RR LL Measurement sets
+## Visibility averaged DS maker ########################################################################
+Purpose: Make Stokes V, I, RR and LL DS from RR LL CASA Measurement sets (MS)
 
-Code takes in MS files within the folder and makes DS.
-Name DS as in this format '*_scanX_tN.ms' where X is scan number and N is the split number such that t1<t2<...<t10.. is the chronogical sequence of MS files.
+___________________________________________________________________
+## IMPORTANT: Run MS_prep_forVisavgDS.py before running this code. 
+--------------------------------------------------------------------
 
-Run in python 3.6 for full functionality.
+Code takes in splitted MS file data made by MS_prep_forVisavgDS.py. It generated a visibility averaged dynamic spectrum for each scan per polarisation (RR and LL) and also generate STOKES V, I and V/I dynamic spectra. The outputs will be saved in folders user specify.
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Run in python 3.6 after bridging with CASA 6.4
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Just fill in the INPUT sections and set the code to run.
+
+#############################################################################################################
 '''
+
 from multiprocessing import Pool
 import numpy as np,os,glob
 import matplotlib.pyplot as plt
@@ -18,30 +28,35 @@ import numpy.ma as ma
 import casatasks,casatools
 from casatools import ms,msmetadata
 from copy import deepcopy as cpy
-######### INPUT ######################
-R_MSdir='/mn/stornext/d20/RoCS/atulm/GMRT_data/Miguel_data_SPI/30Oct2021/Devo_analysis/SplitMS/RR/MSpfils_V1/'
-L_MSdir='/mn/stornext/d20/RoCS/atulm/GMRT_data/Miguel_data_SPI/30Oct2021/Devo_analysis/SplitMS/LL/MSpfils_V1/'
-DS_dir='/mn/stornext/d20/RoCS/atulm/GMRT_data/Miguel_data_SPI/30Oct2021/Devo_analysis/SplitMS/' # RR and LL DS will be saved here.
-VDS_dir='/mn/stornext/d20/RoCS/atulm/GMRT_data/Miguel_data_SPI/30Oct2021/Devo_analysis/SplitMS/VDS_RLvisAvg/' # Code will make VDS_dir, IDS_dir and polDS_dir if they dont already exist.
-IDS_dir='/mn/stornext/d20/RoCS/atulm/GMRT_data/Miguel_data_SPI/30Oct2021/Devo_analysis/SplitMS/IDS_RLvisAvg/'
-polDS_dir='//mn/stornext/d20/RoCS/atulm/GMRT_data/Miguel_data_SPI/30Oct2021/Devo_analysis/SplitMS/polDS_RLvisAvg/'
-need_GMRTcorr=True #Correct for GMRT wrong tagging of RR and LL
-Nproc=15
-Nice=1
-whichDS=1 # 1. absolute value of complex mean visibility 2. Real(averaged visibility) 
-MStag='target*'
-#scans=[3,5,7,9,11,14,16,18,20,22]
-Epoch='1858/11/16 23:59:57.274466' # Give in format YYYY/MM/DD hh:mm:ss.s --> seconds in decimal upto microsecond precision
-tunit='s'
-frequnit='MHz'
-spw=0
-del_t=10 # Averaging in time needed. Give in timesteps
-delf=50 # Averaging in channels needed. Give in channel width unit, 'full': for full band avgd lightcurve
-datacolumn='corrected'
-err_std=False # Do you want errors estimated based on standard deviation of the complex visibility data?
-save_unavgdata=False # Save MS data array as pickle file for future ease of use.
-unavgdata_fold='MS_data_pfils/' #Name of the folder to which unavg MSdata is to be stored inside the R_MSdir and L_MSdir
-V_tol=0.0005 # Absolute value of the tolerable error rms limit based on expected source flux in Jy
+
+'''
+######### INPUT #############################################################################################
+'''
+R_MSdir='/Data/SplitMS/RR/MSpfils_V1/' # Directory containing STOKES RR MS pickle file data
+L_MSdir='/Data/SplitMS/LL/MSpfils_V1/' # Directory containing STOKES LL MS pickle file data
+DS_dir='/Data/SplitMS/' # RR and LL DS will be saved here. Separate folders will be made 
+VDS_dir='/Data/SplitMS/VDS_RLvisAvg/' # Directory to save STOKES V DS. Code will make VDS_dir, IDS_dir and polDS_dir if they dont already exist.
+IDS_dir='/Data/SplitMS/IDS_RLvisAvg/' # Directory to save STOKES I DS.
+polDS_dir='/Data/SplitMS/polDS_RLvisAvg/' # Directory to save V/I (circ. polarisation) DS.
+need_GMRTcorr=True #Correct for GMRT wrong tagging of RR and LL. Set to True if data is from GMRT. 
+Nproc=15 # Number of processor cores to use
+Nice=1 # CPU nice value
+whichDS=1 # Either 1 or 2. 1. |Mean(visibility)| [Absolute value is taken after visibility averaging] 2. Real(Mean(visibility)) [Real part is only taken] 
+MStag='target*' #[Tag name of MS file names to seach for. Output from MS_prep_forVisavgDS.py will ensure that the names will start by 'target*.p'. But amend this if you have modified this.]
+Epoch='1858/11/16 23:59:57.274466' # Give in format YYYY/MM/DD hh:mm:ss.s --> seconds in decimal upto microsecond precision. This is the observatory epoch to convert CASA MS time axis to UTC time. For GMRT this is '1858/11/16 23:59:57.274466'.
+tunit='s' # Data time unit
+frequnit='MHz' # Data frequency unit
+del_t=10 # Averaging in time needed for Dynamic spectrum. Give in timesteps. Eg. 10 - averages 10 time steps of data
+delf=50 # Averaging in channels needed. Give in channel width unit. 'full': for full band averaged lightcurve
+
+'''
+## INPUTS to worry about if you need error Dynamic spectra #################
+'''
+err_std=False # Do you want errors estimated based on standard deviation of the complex visibility data? If False, errors will be estimated just based on imaginary part of visibility data. This is based on the idea that imaginary part should ideally be 0 for a phase centre source.
+'''
+## INPUTS for flagging MS data further ###################
+'''
+V_tol=0.0005 # Absolute value of the tolerable error rms limit based on expected STOKES V flux in Jy
 Vsign=-1 # -1 if expected STOKES V <0 , 0 if expected STOKES V =0 , 1 if expected STOKES V>0
 MaxVf='' # Maximum absolute flux expected in Jy from the source beyond which should be flagged in the original abs(visibility data) to flag bad times and channels.
 		# this will be done on raw visibility data before making the required averaging in time and spectral axes.
@@ -49,22 +64,34 @@ MaxVf='' # Maximum absolute flux expected in Jy from the source beyond which sho
 MaxIf='' # Maximum absolute flux expected in Jy from the source beyond which should be flagged in the original abs(visibility data) to flag bad times and channels.
 		# this will be done on raw visibility data before making the required averaging in time and spectral axes.
 		#Leave as '' if no constraints are to be applied
-
+'''
 ## Input for Masking scheme based on polarised Flare flux expectated
+'''
 Msk_wrtI=False # True or False. Do you want to apply mask to DS based on criteria that strong flares are atleast > minPol % polarised
-Stflare=0.04 # Expected I flux of the strong flare in Jy. Used only i Msk_wrtI == True
+Stflare=0.04 # Expected minimum STOKES I flux of the strong flare in Jy. Used only is Msk_wrtI == True
 minPol=4 #in % . sign of polarisation will be autoset as per Vsign. So DON'T provide signed %.  
-fracmode=True #True or False. If True masking will be done to freq-time regions of all STOKES DSs and circ. pol DS which satisfy criteria: I flux>Stflare & I flux/Circ Pol > Stflare/minPol So that flares are atleast polarised to the expected ratio
-###########################
-
-collab='Flux density' # Label without units
-flxscl=1000
+fracmode=True #True or False. 
+							#If True masking will be done to freq-time regions of all STOKES DSs and circ. pol DS which satisfy criteria: I flux>Stflare & I flux/(Circ. Pol) > Stflare/minPol So that flares are atleast polarised to the expected ratio
+							#If False masking will be done as per: 	I flux>Stflare & Circ. poln > minpol
+'''
+###### INPUTS for Dynamic spectrum (DS) plotting section ########################
+'''
 Flx_u='mJy' # Unit of flux in the plot. eg: mJy, Jy
-plt_tunit='min' # Plot time unit
-plt_tconv=1/60. # Conversion from data time to plt time
+flxscl=1000	# Flux scaling required to convert Jy units to unit of choice in the plot.
+plt_tunit='min' # Plot time unit required
+plt_tconv=1/60. # Conversion from data time units to plot time
 data_scl='' # Data scaling to apply. Choices: 'log','sqrt','pow_N' - where N is the power to which data is to be raised to. Leave as '' if no special normalisation is needed
-cmap='nipy_spectral_r'
-########################################
+cmap='nipy_spectral_r' # Color map to use in the DS plot.
+
+'''
+########################### END of INPUT SECTION ############################################################
+##### DO NOT EDIT ANY portions further down in the code unless you are a developer ##########################
+'''
+
+#save_unavgdata=False # Save MS data array as pickle file for future ease of use.
+#unavgdata_fold='MS_data_pfils/' #Name of the folder to which unavg MSdata is to be stored inside the R_MSdir and L_MSdir
+
+collab='Flux density' # Flux axis label without units
 collab=collab+' ('+Flx_u+')'
 
 MS=casatools.ms()
@@ -85,6 +112,7 @@ os.system('mkdir '+DS_dir)
 os.system('mkdir '+DS_dir+'RRDS_visAvg/')
 os.system('mkdir '+DS_dir+'LLDS_visAvg/')
 
+
 def namer(tags,vs):
 	name=''
 	i=0
@@ -102,11 +130,12 @@ if Msk_wrtI==True:
 
 else:
 	DSfold=adg+'DS'+namer(['_Vtol','_dt','_df','_MxI','_MxV'],[str(np.round(V_tol*flxscl,2))+Flx_u,del_t,delf,MaxIf,MaxVf])+'/'
-if save_unavgdata==True:
-	RMSdloc=R_MSdir+unavgdata_fold
-	LMSdloc=L_MSdir+unavgdata_fold
-	os.system('mkdir '+RMSdloc)
-	os.system('mkdir '+LMSdloc)
+
+#if save_unavgdata==True:
+#	RMSdloc=R_MSdir+unavgdata_fold
+#	LMSdloc=L_MSdir+unavgdata_fold
+#	os.system('mkdir '+RMSdloc)
+#	os.system('mkdir '+LMSdloc)
 
 os.system('mkdir '+VDS_dir)
 os.system('mkdir '+IDS_dir)
@@ -182,9 +211,9 @@ def Analyse(i):
 
 	Flag=Rflag+Lflag #Regions of data to be flagged
 
-	if save_unavgdata==True:
-		pickle.dump({'MS_data':Rdata,'Flag':Rflag, 'Time':{'Range':times, 'Begin':begt, 'End':endt}, 'Frequency': freqs},open(RMSdloc+RMS.split('/')[-1].replace('.ms','.p'),'wb'))
-		pickle.dump({'MS_data':Ldata,'Flag':Lflag, 'Time':{'Range':times, 'Begin':begt, 'End':endt}, 'Frequency':freqs},open(LMSdloc+LMS.split('/')[-1].replace('.ms','.p'),'wb'))
+#	if save_unavgdata==True:
+#		pickle.dump({'MS_data':Rdata,'Flag':Rflag, 'Time':{'Range':times, 'Begin':begt, 'End':endt}, 'Frequency': freqs},open(RMSdloc+RMS.split('/')[-1].replace('.ms','.p'),'wb'))
+#		pickle.dump({'MS_data':Ldata,'Flag':Lflag, 'Time':{'Range':times, 'Begin':begt, 'End':endt}, 'Frequency':freqs},open(LMSdloc+LMS.split('/')[-1].replace('.ms','.p'),'wb'))
 
 		
 	Rdata=ma.array(Rdata,mask=Flag)
