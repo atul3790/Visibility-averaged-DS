@@ -14,13 +14,13 @@ The package has three codes:
    ***Note:*** The error analysis section of the code is idea wise in beta phase. The 2 ways it tries to infer error in DS fluxes are:
    - *Standard deviation in complex visibility data*
 
-      * |<V^2> - \<V\>^2|, where V = V(u,v) are the complex visibilities across baselines. <> is averaging across baselines. The Dynamic spectrum is basically <V(u,v)>. 
+      |<V^2> - \<V\>^2|, where V = V(u,v) are the complex visibilities across baselines. <> is averaging across baselines. The Dynamic spectrum is basically <V(u,v)>. 
    - *Standard deviation in the argument of the complex visibilities*
 
-      * <Angle(V)^2> - Angle(\<V\>)^2
+      <Angle(V)^2> - Angle(\<V\>)^2
    - *Systematic error*
       
-      * Systematic measurement error is obtained as |Im(<V>)|. In ideal case since we expect a source at phase centre only, the Im(<V>) = 0.
+      Systematic measurement error is obtained as |Im(<V>)|. In ideal case since we expect a source at phase centre only, the Im(<V>) = 0.
    
    Code outputs both systematic and `thermal' or random noise (standard deviation noise) separately. USer may use this statistics to obtain one's own noise estimates. 
    
