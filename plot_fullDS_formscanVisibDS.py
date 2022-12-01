@@ -12,7 +12,10 @@ from matplotlib import colors
 from copy import deepcopy as cpy
 from astropy import units as u
 from astropy.constants import k_B
-########### INPUT ##################################
+
+'''
+########### INPUT ###########################################################################################
+'''
 V_pfildir='/Data/SplitMS/VDS_RLvisAvg/DS_Vtol0.5mJy_dt10_df50/DSpfils/' # Folder containing STOKES V DS pickle files
 I_pfildir='/Data/SplitMS/IDS_RLvisAvg/DS_Vtol0.5mJy_dt10_df50/DSpfils/'  # Folder containing STOKES I DS pickle files
 Pol_pfildir='/Data/SplitMS/polDS_RLvisAvg/DS_Vtol0.5mJy_dt10_df50/DSpfils/'  # Folder containing Circular Polariation DS pickle files
