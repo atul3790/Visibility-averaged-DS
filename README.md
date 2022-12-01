@@ -20,9 +20,9 @@ The package has three codes:
       <Angle(V)^2> - Angle(\<V\>)^2
    - *Systematic error*
       
-      Systematic measurement error is obtained as |Im(<V>)|. In ideal case since we expect a source at phase centre only, the Im(<V>) = 0.
+      Systematic measurement error is obtained as |Im(\<V\>)|. In ideal case since we expect a source at phase centre only, the Im(\<V\>) = 0.
    
-   Code outputs both systematic and `thermal' or random noise (standard deviation noise) separately. USer may use this statistics to obtain one's own noise estimates. 
+   Code outputs both systematic and \`thermal' or random noise (standard deviation noise) separately. User may use this statistics to obtain one's own noise estimates. 
    
 3. **plot_fullDS_formscanVisibDS.py** 
 
