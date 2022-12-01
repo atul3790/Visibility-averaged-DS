@@ -17,7 +17,7 @@ The package has three codes:
       |<V^2> - <V>^2|, where V = V(u,v) are the complex visibilities across baselines. <> is averaging across baselines. The Dynamic spectrum is basically <V(u,v)>. 
    - Standard deviation in the argument of the complex visibilities
 
-      <Angle(V)^2> - Angle(<V>)^2
+      <Angle(V)^2> - Angle(\<V\>)^2
    - Systematic error
       
       Systematic measurement error is obtained as |Im(<V>)|. In ideal case since we expect a source at phase centre only, the Im(<V>) = 0.
