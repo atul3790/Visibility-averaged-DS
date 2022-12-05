@@ -1,6 +1,6 @@
 # Visibility-averaged-DS
 This is a package which takes in calibrated measurement set and a background sky model, and generate visibility averaged dynamic spectrum for the central source after subtracting the visibilities of the background sky model. The package is primarily intended for long-duration multi-scan monitoring observations stellar/other variable radio sources.
-The package uses python 3.6 and calls CASA tools/tasks via python. This bridge works between python 3.6 and CASA 6 verions (See, https://casadocs.readthedocs.io/en/v6.2.1/notebooks/usingcasa.html#Modular-Installation-of-CASA-6)
+The package uses python 3.6 and calls CASA tools/tasks via python. This bridge works between python 3.6 and CASA 6 versions (See, https://casadocs.readthedocs.io/en/v6.2.1/notebooks/usingcasa.html#Modular-Installation-of-CASA-6)
 The package has three codes: 
 
 1. **MS_prep_forVisavgDS.py**
