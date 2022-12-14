@@ -175,7 +175,7 @@ os.system('mkdir '+polDS_dir+'DSpngs/ErrDSs/')
 
 Epoch=dt.strptime(Epoch,"%Y/%m/%d %H:%M:%S.%f")
 
-RMSs=sorted(glob.glob(R_MSdir+MStag+'*ms')) if is_MS==True else sorted(glob.glob(R_MSdir+MStag+'*.p')) 
+RMSs=sorted(glob.glob(R_MSdir+MStag+'*.p')) 
 LMSs=[glob.glob(L_MSdir+MStag+'_scan'+i.split('/')[-1].split('_scan')[1])[0] for i in RMSs]
 
 plt.ioff()
