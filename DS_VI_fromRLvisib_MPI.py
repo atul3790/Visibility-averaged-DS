@@ -134,14 +134,16 @@ def namer(tags,vs):
 		i+=1
 	return name
 
+Vst={0:'0',-1:'-',1:'+'}
+
 if Msk_wrtI==True:
 	if fracmode==False:
-		DSfold=adg+'DS'+namer(['_Vtol','_dt','_df','_MxI','_MxV'],[str(np.round(V_tol*flxscl,2))+Flx_u,del_t,delf,MaxIf,MaxVf])+'_minPol'+str(minPol)+'_minFlr'+str(Stflare)+'/'
+		DSfold=adg+'DS'+namer(['Vsig','_Vtol','_dt','_df','_MxI','_MxV'],[Vst[Vsign],str(np.round(V_tol*flxscl,2))+Flx_u,del_t,delf,MaxIf,MaxVf])+'_minPol'+str(minPol)+'_minFlr'+str(Stflare)+'/'
 	else:
-		DSfold=adg+'DS'+namer(['_Vtol','_dt','_df','_MxI','_MxV'],[str(np.round(V_tol*flxscl,2))+Flx_u,del_t,delf,MaxIf,MaxVf])+'_minPol'+str(minPol)+'_minFlr'+str(Stflare)+'_I-by-PolMask/'
+		DSfold=adg+'DS'+namer(['Vsig','_Vtol','_dt','_df','_MxI','_MxV'],[Vst[Vsign],str(np.round(V_tol*flxscl,2))+Flx_u,del_t,delf,MaxIf,MaxVf])+'_minPol'+str(minPol)+'_minFlr'+str(Stflare)+'_I-by-PolMask/'
 
 else:
-	DSfold=adg+'DS'+namer(['_Vtol','_dt','_df','_MxI','_MxV'],[str(np.round(V_tol*flxscl,2))+Flx_u,del_t,delf,MaxIf,MaxVf])+'/'
+	DSfold=adg+'DS'+namer(['Vsig','_Vtol','_dt','_df','_MxI','_MxV'],[VstVst[Vsign],str(np.round(V_tol*flxscl,2))+Flx_u,del_t,delf,MaxIf,MaxVf])+'/'
 
 #if save_unavgdata==True:
 #	RMSdloc=R_MSdir+unavgdata_fold
