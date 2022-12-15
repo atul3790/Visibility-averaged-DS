@@ -35,10 +35,12 @@ basedir='/Data/' # Directory with the calibrated MS data.
 Ms='target_avg.ms' # final selfcal MS file with just the target field.
 GMRT_pip_model=['../GMRT_pipeline_result/GJ486-selfcalimg8.model.tt0', '../GMRT_pipeline_result/GJ486-selfcalimg8.model.tt1'] # List of model components (.tt0, .tt1)
 Nterms=2 # Number of Taylor terms (.tt0, .tt1) in background sky model
-split_dir='SplitDSs/' # Folder where scan-split MS pickle files has to be saved. Code will make this folder if it does not exist already. 
+split_dir='SplitMSs/' # Folder where scan-split MS pickle files has to be saved. Code will make this folder if it does not exist already. 
 spw=0 # SPW containing the data
-only_splitMS=True # If planting background sky model and uvsub are already done.
-overwrite=False # Overwrite existing MS pickle files?
+Analysis_mode=1 # Integer choices:
+		# 1 : Plant background sky model in madel data column, do uvsub, then split MS based on scans/sub-scans
+		# 2 : Just split MS based on scans /sub-scans (Assumes that uvsub is already done on MS or is not needed.)
+overwrite=False # Do you want to overwrite any existing pickle files resulted from previous code runs? If False, code will not redo analysis, if results already exist.
 Nsplits=1 # Number of times each target scan has to be further splitted. Egs. 0 means no further split. 1 will split each scan into 2 time windows further i.e scan start - scan duration/2 & scan duration/2 - scan end. 
 Epoch='1858/11/16 23:59:57.274466' # Give in format YYYY/MM/DD hh:mm:ss.s --> seconds in decimal upto microsecond precision. This is the start epoch of the clock for the observatory. This will be used to convert scan time in CASA MS to real UT time. For GMRT this start Epoch is '1858/11/16 23:59:57.274466'
 '''
@@ -52,7 +54,7 @@ msmd=casatools.msmetadata()
 Epoch=dt.strptime(Epoch,"%Y/%m/%d %H:%M:%S.%f")
 
 os.system('mkdir '+split_dir)
-if only_splitMS==False:
+if Analysis_mode==1:
 	## Planting model
 	print('Planting GMRT pipeline model')
 	ft(vis=Ms,model=GMRT_pip_model,nterms=Nterms)
