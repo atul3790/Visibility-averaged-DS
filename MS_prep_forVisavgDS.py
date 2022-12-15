@@ -40,7 +40,8 @@ spw=0 # SPW containing the data
 Analysis_mode=1 # Integer choices:
 		# 1 : Plant background sky model in madel data column, do uvsub, then split MS based on scans/sub-scans
 		# 2 : Just split MS based on scans /sub-scans (Assumes that uvsub is already done on MS or is not needed.)
-overwrite=False # Do you want to overwrite any existing pickle files resulted from previous code runs? If False, code will not redo analysis, if results already exist.
+overwrite=False # Do you want to overwrite any existing pickle files resulted from previous code runs?
+		# If False, code will not redo analysis, if results already exist.
 Nsplits=1 # Number of times each target scan has to be further splitted. Egs. 0 means no further split. 1 will split each scan into 2 time windows further i.e scan start - scan duration/2 & scan duration/2 - scan end. 
 Epoch='1858/11/16 23:59:57.274466' # Give in format YYYY/MM/DD hh:mm:ss.s --> seconds in decimal upto microsecond precision. This is the start epoch of the clock for the observatory. This will be used to convert scan time in CASA MS to real UT time. For GMRT this start Epoch is '1858/11/16 23:59:57.274466'
 '''
