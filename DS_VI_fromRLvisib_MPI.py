@@ -42,8 +42,8 @@ need_GMRTcorr=True #Correct for GMRT wrong tagging of RR and LL. Set to True if 
 Nproc=15 # Number of processor cores to use
 Nice=1 # CPU nice value
 whichDS=1 # Either 1 or 2. 
-	  # 1. |Mean(visibility)| [Absolute value is taken after visibility averaging/compression in baseline axis] 
-	  # 2. Real(Mean(visibility)) [Real part of baseline averaged visibility is taken.] 
+	  # 1. |Mean(visibility)| [Absolute value of baseline averaged visibility(time,freq).] 
+	  # 2. Real(Mean(visibility)) [Real part of baseline averaged visibility(time,freq).] 
 MStag='target*' #[Tag name of MS file names to seach for. Output from MS_prep_forVisavgDS.py will ensure that the names will start by 'target*.p'. But amend this if you have modified this.]
 Epoch='1858/11/16 23:59:57.274466' # Give in format YYYY/MM/DD hh:mm:ss.s --> seconds in decimal upto microsecond precision. This is the observatory epoch to convert CASA MS time axis to UTC time. For GMRT this is '1858/11/16 23:59:57.274466'.
 tunit='s' # Data time unit
