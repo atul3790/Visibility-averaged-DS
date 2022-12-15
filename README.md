@@ -14,7 +14,7 @@ The package has three codes:
    ***Note:*** The error analysis section of the code is idea wise in beta phase. The 2 ways the code tries to infer error in DS fluxes are:
    - *Standard deviation in complex visibility data*
 
-      |<V^2> - \<V\>^2|, where V = V(u,v,$$\nu$$,t) are the complex visibilities across baselines. <> is averaging across baselines. The Dynamic spectrum is basically <V(u,v)>. 
+      |<V^2> - \<V\>^2|, where V = V(u,v,$\nu$,t) are the complex visibilities across baselines. <> is averaging across baselines. The Dynamic spectrum is basically <V(u,v)>. 
    - *Standard deviation in the argument of the complex visibilities*
 
       <Angle(V)^2> - Angle(\<V\>)^2
