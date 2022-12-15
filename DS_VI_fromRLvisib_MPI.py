@@ -143,7 +143,7 @@ if Msk_wrtI==True:
 		DSfold=adg+'DS'+namer(['Vsig','_Vtol','_dt','_df','_MxI','_MxV'],[Vst[Vsign],str(np.round(V_tol*flxscl,2))+Flx_u,del_t,delf,MaxIf,MaxVf])+'_minPol'+str(minPol)+'_minFlr'+str(Stflare)+'_I-by-PolMask/'
 
 else:
-	DSfold=adg+'DS'+namer(['Vsig','_Vtol','_dt','_df','_MxI','_MxV'],[VstVst[Vsign],str(np.round(V_tol*flxscl,2))+Flx_u,del_t,delf,MaxIf,MaxVf])+'/'
+	DSfold=adg+'DS'+namer(['Vsig','_Vtol','_dt','_df','_MxI','_MxV'],[Vst[Vsign],str(np.round(V_tol*flxscl,2))+Flx_u,del_t,delf,MaxIf,MaxVf])+'/'
 
 #if save_unavgdata==True:
 #	RMSdloc=R_MSdir+unavgdata_fold
