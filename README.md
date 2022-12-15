@@ -12,12 +12,13 @@ The package has three codes:
    The dynamic spectrum (DS) making code. It uses parallel processing tools in python to operate on the splitted out sub-MS data pickle files- each file per core for each polarisation. It writes out visibility averaged dynamic spectra (pickled numpy ndarrays) in ***STOKES RR, LL, V, I and circular polarisation (V/I)*** for each sub data set. The cade is also equipped with simple flagging options based on clipping fluxes beyond some level in different polarisations (V & I). The code also masks bad regions of data based on expected stellar polarisation levels and sense of polarisation. The code can be used to average data in frequency and time as per need, which will help to also obtain band averaged light curve for the source.
 
    ***Note:*** The error analysis section of the code is idea wise in beta phase. The 2 ways the code tries to infer error in DS fluxes are:
-   - *Standard deviation in complex visibility data*
+    - *Random/Thermal-like error*
+      * *Standard deviation in complex visibility data*
 
-      |<V^2> - \<V\>^2|, where V = V(u,v,$\nu$,t) are the complex visibilities across baselines, frequency and time. <> is averaging across baselines (u,v). The Dynamic spectrum is basically <V(u,v,$\nu$,t)>. 
-   - *Standard deviation in the argument of the complex visibilities*
-
-      <Angle(V)^2> - Angle(\<V\>)^2
+         |<V^2> - \<V\>^2|, where V = V(u,v,$\nu$,t) are the complex visibilities across baselines, frequency and time. <> is averaging across baselines (u,v). The Dynamic spectrum is basically <V(u,v,$\nu$,t)>. 
+      * *Standard deviation in the argument of the complex visibilities*
+      
+         Phase_err= <Angle(V)^2> - Angle(\<V\>)^2 is first computed and then |<V(u,v,$\nu$,t)>| x sin(Phase_err) is reported
    - *Systematic error*
       
       Systematic measurement error is obtained as |Im(\<V\>)|. In ideal case since we expect a source at phase centre only, the Im(\<V\>) = 0.
