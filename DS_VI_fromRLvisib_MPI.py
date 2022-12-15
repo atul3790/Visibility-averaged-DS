@@ -41,7 +41,9 @@ polDS_dir='/Data/SplitMS/polDS_RLvisAvg/' # Directory to save V/I (circ. polaris
 need_GMRTcorr=True #Correct for GMRT wrong tagging of RR and LL. Set to True if data is from GMRT. 
 Nproc=15 # Number of processor cores to use
 Nice=1 # CPU nice value
-whichDS=1 # Either 1 or 2. 1. |Mean(visibility)| [Absolute value is taken after visibility averaging] 2. Real(Mean(visibility)) [Real part is only taken] 
+whichDS=1 # Either 1 or 2. 
+	  # 1. |Mean(visibility)| [Absolute value is taken after visibility averaging/compression in baseline axis] 
+	  # 2. Real(Mean(visibility)) [Real part of baseline averaged visibility is taken.] 
 MStag='target*' #[Tag name of MS file names to seach for. Output from MS_prep_forVisavgDS.py will ensure that the names will start by 'target*.p'. But amend this if you have modified this.]
 Epoch='1858/11/16 23:59:57.274466' # Give in format YYYY/MM/DD hh:mm:ss.s --> seconds in decimal upto microsecond precision. This is the observatory epoch to convert CASA MS time axis to UTC time. For GMRT this is '1858/11/16 23:59:57.274466'.
 tunit='s' # Data time unit
@@ -54,25 +56,35 @@ delf=50 # Averaging in channels needed. Give in channel width unit. 'full': for 
 '''
 err_std=False # Do you want errors estimated based on standard deviation of the complex visibility data? If False, errors will be estimated just based on imaginary part of visibility data. This is based on the idea that imaginary part should ideally be 0 for a phase centre source.
 '''
-## INPUTS for flagging MS data further ###################
+## INPUTS for flagging MS data further ##############################################################
+## This section helps to clip out RFI or bad data regions with spurious high flux levels ############
 '''
-V_tol=0.0005 # Absolute value of the tolerable error rms limit based on expected STOKES V flux in Jy
-Vsign=-1 # -1 if expected STOKES V <0 , 0 if expected STOKES V =0 , 1 if expected STOKES V>0
-MaxVf='' # Maximum absolute flux expected in Jy from the source beyond which should be flagged in the original abs(visibility data) to flag bad times and channels.
-		# this will be done on raw visibility data before making the required averaging in time and spectral axes.
-		#Leave as '' if no constraints are to be applied
-MaxIf='' # Maximum absolute flux expected in Jy from the source beyond which should be flagged in the original abs(visibility data) to flag bad times and channels.
-		# this will be done on raw visibility data before making the required averaging in time and spectral axes.
-		#Leave as '' if no constraints are to be applied
+Vsign=-1 # -1 if expected STOKES V <0 for all flares. 
+	 # 0 if STOKES V can be either +ve or -ve depening on flare events. 
+	 # 1 if expected STOKES V>0 for all flares.
+V_tol=0.0005 # Absolute value of the tolerable error flux limit, based on expected STOKES V flux in Jy. 
+	     # Any flux value in DS above this will be flagged in the following manner:
+	     # If Vsign == 1 => +ve STOKES V flares are expected. So stokes V flux < -V_tol are flagged across data
+	     # If Vsign ==-1 => -ve STOKES V flares are expected. So stokes V flux > V_tol are flagged across data
+	     # If Vsign == 0 => no preference in STOKES V. So stokes V flux < |V_tol| are flagged across data		
+MaxVf='' # Maximum absolute flux expected in Jy from the source beyond which should be flagged in the original abs(visibility data).
+	# this will be done on complex visibility data across baselines, before making the required averaging in time and spectral axes.
+	# Condition used to flag: |RR(baseline,freq,time) - LL(baseline,freq,time)|/2<|MaxVf|
+	#Leave as '' if no constraints are to be applied
+MaxIf='' # Maximum absolute flux expected in Jy from the source beyond which should be flagged in the original abs(visibility data). Same as for MaxVf.
+	# Condition used to flag: |RR(baseline,freq,time) + LL(baseline,freq,time)|/2<|MaxIf|
+	#Leave as '' if no constraints are to be applied
 '''
-## Input for Masking scheme based on polarised Flare flux expectated
+## Input for Masking scheme based on polarised Flare flux expectated ##################################################################
+## This section will work only if Msk_wrtI==True ######################################################################################
+### Idea is to further crop the non-flare high flux spurious data based on expected stellar flare levels & polarisation levels ########
 '''
 Msk_wrtI=False # True or False. Do you want to apply mask to DS based on criteria that strong flares are atleast > minPol % polarised
 Stflare=0.04 # Expected minimum STOKES I flux of the strong flare in Jy. Used only is Msk_wrtI == True
 minPol=4 #in % . sign of polarisation will be autoset as per Vsign. So DON'T provide signed %.  
 fracmode=True #True or False. 
-							#If True masking will be done to freq-time regions of all STOKES DSs and circ. pol DS which satisfy criteria: I flux>Stflare & I flux/(Circ. Pol) > Stflare/minPol So that flares are atleast polarised to the expected ratio
-							#If False masking will be done as per: 	I flux>Stflare & Circ. poln > minpol
+	      #If True masking will be done to freq-time regions of all STOKES DSs and circ. pol DS which satisfy criteria: I flux>Stflare & I flux/(Circ. Pol) > Stflare/minPol So that flares are atleast polarised to the expected ratio
+	      #If False masking will be done as per: 	I flux>Stflare & Circ. poln > minpol
 '''
 ###### INPUTS for Dynamic spectrum (DS) plotting section ########################
 '''
@@ -381,7 +393,7 @@ def Analyse(i):
 				VDS=fun(DS_n)
 				if Vsign==-1 and whichDS==1:
 					VDS=-VDS
-				VDS=ma.masked_equal(VDS,0) # Exact 0 value is imposssible					eVDS_th=eDS_n
+				VDS=ma.masked_equal(VDS,0) # Exact 0 value is imposssible
 				eVDS_sys =eDS_sys
 				eVDS_th=ma.abs(eDS_n)
 				eVDS_th.mask=eVDS_th.mask+VDS.mask
@@ -421,8 +433,10 @@ def Analyse(i):
 
 		RDS=fun(RDS)
 		LDS=fun(LDS)
-		if whichDS==1:
+		if whichDS==1 and Vsign==-1:
 			VDS=Vsign*fun(VDS)
+		else:
+			VDS=fun(VDS)
 		IDS=fun(IDS)
 
 		print('All DSs and the random and systematic error DSs made')
